@@ -1,10 +1,13 @@
 <?php
 namespace frontend\controllers;
 
+use common\models\Card;
+use common\models\search\CardSearch;
 use frontend\models\ResendVerificationEmailForm;
 use frontend\models\VerifyEmailForm;
 use Yii;
 use yii\base\InvalidArgumentException;
+use yii\data\ActiveDataProvider;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -14,6 +17,7 @@ use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
+use yii\web\NotFoundHttpException;
 
 /**
  * Site controller
@@ -75,6 +79,58 @@ class SiteController extends Controller
     public function actionIndex()
     {
         return $this->render('index');
+    }
+
+    /**
+     * Lists all Card models.
+     * @return mixed
+     */
+    public function actionCard()
+    {
+        $searchModel = new CardSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->query->limit(6);
+//        $dataProvider->pagination = ['pageSize' => 6];
+        $dataProvider->pagination  = false;
+        $dataProvider->sort = ['defaultOrder' => ['id'=>SORT_DESC]];
+
+        return $this->render('card', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * Displays a single Card model.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionCardView($id)
+    {
+        $model = $this->findCardModel($id);
+            $model->views_count++;
+            $model->save();
+
+        return $this->render('card_view', [
+            'model' => $model
+        ]);
+    }
+
+    /**
+     * Finds the Card model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param integer $id
+     * @return Card the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findCardModel($id)
+    {
+        if (($model = Card::findOne($id)) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 
     /**

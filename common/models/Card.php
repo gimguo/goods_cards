@@ -3,6 +3,8 @@
 namespace common\models;
 
 use Yii;
+use yii\helpers\FileHelper;
+use yii\web\UploadedFile;
 
 /**
  * This is the model class for table "card".
@@ -14,6 +16,8 @@ use Yii;
  */
 class Card extends \yii\db\ActiveRecord
 {
+    public $image;
+
     /**
      * {@inheritdoc}
      */
@@ -31,6 +35,8 @@ class Card extends \yii\db\ActiveRecord
             [['description'], 'string'],
             [['views_count'], 'integer'],
             [['title'], 'string', 'max' => 250],
+            [['image'], 'file', 'extensions' => 'jpg'],
+            [['title', 'description'], 'required'],
         ];
     }
 
@@ -44,6 +50,40 @@ class Card extends \yii\db\ActiveRecord
             'title' => 'Title',
             'description' => 'Description',
             'views_count' => 'Views Count',
+            'image' => 'Picture',
         ];
+    }
+
+    public function beforeSave($insert)
+    {
+        $this->image = UploadedFile::getInstance($this, 'image');
+        if ($insert) {
+            if (!$this->image) {
+                $this->addError('image', 'Выберите картинку');
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        if ($this->image) {
+            if ($insert) {
+                $id = Yii::$app->db->getLastInsertID();
+                $this->image->saveAs("uploads/card_img/{$id}.{$this->image->extension}");
+            } else {
+                $this->image->saveAs("uploads/card_img/{$this->id}.{$this->image->extension}");
+            }
+        }
+
+        parent::afterSave($insert, $changedAttributes);
+    }
+
+    public function afterDelete()
+    {
+        FileHelper::unlink("uploads/card_img/{$this->id}.jpg");
+        parent::afterDelete();
     }
 }

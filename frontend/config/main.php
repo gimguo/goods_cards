@@ -44,6 +44,12 @@ return [
             ],
         ],
         */
+        'urlManagerBackend' => [
+            'class' => 'yii\web\urlManager',
+            'baseUrl' => 'http://167.71.61.48:90',
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+        ],
     ],
     'params' => $params,
 ];

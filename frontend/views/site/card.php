@@ -14,32 +14,36 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Create Card', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
+        'filterModel' => false,
         'columns' => [
-//            ['class' => 'yii\grid\SerialColumn'],
-
             'id',
             [
                 'attribute' => 'image',
                 'format' => 'html',
                 'value' => function ($data) {
-                    return Html::img(Yii::getAlias('@web').'/uploads/card_img/'. $data['id'].'.jpg',
-                        ['width' => '70px']);
+                    $link = Yii::$app->urlManagerBackend->baseUrl . '/uploads/card_img/' . $data['id'] . '.jpg';
+                    return Html::img($link, ['width' => '70px']);
                 },
             ],
             'title',
             'description:ntext',
             'views_count',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{view}',
+                'buttons' => [
+                    'view' => function ($url, $model) {
+                        $customurl = Yii::$app->getUrlManager()->createUrl(['site/card-view', 'id' => $model['id']]); //$model->id для AR
+                        return \yii\helpers\Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $customurl,
+                            ['title' => Yii::t('yii', 'View'), 'data-pjax' => '0']);
+                    }
+                ],
+            ],
         ],
     ]); ?>
 
