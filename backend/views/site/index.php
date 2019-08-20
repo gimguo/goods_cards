@@ -3,10 +3,13 @@
 /* @var $this yii\web\View */
 
 $this->title = 'My Yii Application';
-?>
+
+use yii\helpers\Html; ?>
 <div class="site-index">
 
     <div class="jumbotron">
+        <?= Html::a(Html::tag('h1', "Редактор карточек", ['class' => 'username']), ['card/index']) ?>
+
         <h1>Congratulations!</h1>
 
         <p class="lead">You have successfully created your Yii-powered application.</p>
