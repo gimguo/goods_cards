@@ -13,6 +13,13 @@ return [
     'bootstrap' => ['log'],
     'modules' => [],
     'components' => [
+        'elasticsearch' => [
+            'class' => 'yii\elasticsearch\Connection',
+            'autodetectCluster' => false,
+            'nodes' => [
+                ['http_address' => '172.17.0.3:9200'],
+            ],
+        ],
         'request' => [
             'csrfParam' => '_csrf-backend',
         ],

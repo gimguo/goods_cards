@@ -7,8 +7,9 @@ use yii\grid\GridView;
 /* @var $searchModel common\models\search\CardSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Cards MySql';
+$this->title = 'Cards ElasticSearch';
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="card-index">
 
@@ -32,7 +33,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'title',
             'description:ntext',
             'views_count',
-
             [
                 'class' => 'yii\grid\ActionColumn',
                 'template' => '{view}',
@@ -46,6 +46,5 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ],
     ]); ?>
-
 
 </div>

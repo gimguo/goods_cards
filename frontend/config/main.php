@@ -12,6 +12,13 @@ return [
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
+        'elasticsearch' => [
+            'class' => 'yii\elasticsearch\Connection',
+            'autodetectCluster' => false,
+            'nodes' => [
+                ['http_address' => '172.17.0.3:9200'],
+            ],
+        ],
         'request' => [
             'csrfParam' => '_csrf-frontend',
         ],
@@ -46,7 +53,7 @@ return [
         */
         'urlManagerBackend' => [
             'class' => 'yii\web\urlManager',
-            'baseUrl' => 'http://167.71.61.48:90',
+            'baseUrl' => 'http://134.209.228.239:90',
             'enablePrettyUrl' => true,
             'showScriptName' => false,
         ],

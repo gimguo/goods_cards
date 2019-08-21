@@ -2,12 +2,13 @@
 namespace frontend\controllers;
 
 use common\models\Card;
+use common\models\ElasticCard;
 use common\models\search\CardSearch;
 use frontend\models\ResendVerificationEmailForm;
 use frontend\models\VerifyEmailForm;
 use Yii;
 use yii\base\InvalidArgumentException;
-use yii\data\ActiveDataProvider;
+use yii\data\ArrayDataProvider;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -108,12 +109,48 @@ class SiteController extends Controller
      */
     public function actionCardView($id)
     {
-        $model = $this->findCardModel($id);
-            $model->views_count++;
+        $model = ElasticCard::get($id); // получить запись по первичному ключу
+
+        if (!$model) {
+            $CardModel = $this->findCardModel($id);
+            $CardModel->views_count++;
+            $CardModel->save();
+
+            $model = new ElasticCard();
+            $model->id = $CardModel->id;
+            $model->title = $CardModel->title;
+            $model->description = $CardModel->description;
+            $model->views_count = $CardModel->views_count;
             $model->save();
+        } else {
+            $CardModel = $this->findCardModel($id);
+            $CardModel->views_count++;
+            $CardModel->save();
+
+            $model->views_count = $CardModel->views_count;
+            $model->save();
+        }
 
         return $this->render('card_view', [
             'model' => $model
+        ]);
+    }
+
+    /**
+     * Lists all Card models.
+     * @return mixed
+     */
+    public function actionElasticCard()
+    {
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => ElasticCard::find()->settings()->all(),
+            'sort' => [
+                'attributes' => ['id', 'title', 'description', 'views_count'],
+            ],
+        ]);
+
+        return $this->render('elastic_card', [
+            'dataProvider' => $dataProvider,
         ]);
     }
 
