@@ -73,12 +73,6 @@ class Card extends \yii\db\ActiveRecord
             if ($insert) {
                 $id = Yii::$app->db->getLastInsertID();
                 $this->image->saveAs("uploads/card_img/{$id}.{$this->image->extension}");
-
-                $model = new ElasticCard();
-                $model->id = $this->id;
-                $model->title = $this->title;
-                $model->description = $this->description;
-                $model->save();
             } else {
                 $this->image->saveAs("uploads/card_img/{$this->id}.{$this->image->extension}");
             }
