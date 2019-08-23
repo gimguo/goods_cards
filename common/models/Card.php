@@ -73,10 +73,26 @@ class Card extends \yii\db\ActiveRecord
             if ($insert) {
                 $id = Yii::$app->db->getLastInsertID();
                 $this->image->saveAs("uploads/card_img/{$id}.{$this->image->extension}");
+
+                $model = new ElasticCard();
+                $model->id = $this->id;
+                $model->title = $this->title;
+                $model->description = $this->description;
+                $model->save();
             } else {
                 $this->image->saveAs("uploads/card_img/{$this->id}.{$this->image->extension}");
             }
         }
+
+        $model = ElasticCard::get($this->id);
+        if (!$model) {
+            $model = new ElasticCard();
+        }
+        $model->id = $this->id;
+        $model->title = $this->title;
+        $model->description = $this->description;
+        $model->views_count = $this->views_count;
+        $model->save();
 
         parent::afterSave($insert, $changedAttributes);
     }
@@ -84,6 +100,12 @@ class Card extends \yii\db\ActiveRecord
     public function afterDelete()
     {
         FileHelper::unlink("uploads/card_img/{$this->id}.jpg");
+
+        $model = ElasticCard::get($this->id);
+        if ($model) {
+            $model->delete();
+        }
+
         parent::afterDelete();
     }
 }
